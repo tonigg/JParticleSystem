@@ -6,10 +6,12 @@ import javax.swing.JFrame;
 
 public class ParticleSystemFrame extends JFrame{
 
+	public static final int WIDTH = 800;
+	public static final int HEIGHT = 600;
 	
 	public ParticleSystemFrame() {
 		super("Particle System");
-		setSize(600, 600);
+		setSize(WIDTH, HEIGHT);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
 		ParticlePanel p = new ParticlePanel(); 

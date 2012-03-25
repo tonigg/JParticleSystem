@@ -12,37 +12,56 @@ import particle.ParticleEmiter;
 
 public class ParticlePanel extends JPanel {
 
-	ParticleEmiter pe = new ParticleEmiter(new Point(15, 15), new Point(-5, -5), 250, 100, 250, 100);
-	
+	ParticleEmiter pe1 = new ParticleEmiter(new Point(100, 250),new Point(-6, -6), new Point(6, 6),
+			1200, 5000, 3000, 6000, Color.GREEN);
+//	ParticleEmiter pe2 = new ParticleEmiter(new Point(120, 560),new Point(-6, -6), new Point(6, 6),
+//			300, 5000, 1000, 1000, Color.CYAN);
+
 	public ParticlePanel() {
 		super();
 		setBackground(Color.BLACK);
 	}
-	
-	public void run(){
+
+	private static final int FPS = 60;
+	private static final long REFRESH_TIMER = 1000000000 / FPS;
+
+	public void run() {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
-				while(true){
-					pe.update();
-					
+				while (true) {
+
+					long beginTime, timeTaken, timeLeft;
+					beginTime = System.nanoTime();
+
+					pe1.update();
+//					pe2.update();
+
 					repaint();
-					
+
+					timeTaken = System.nanoTime() - beginTime;
+					timeLeft = (REFRESH_TIMER - timeTaken) / 1000000;
+
+					if (timeLeft < 0) {
+						timeLeft = 5;
+					}
+
 					try {
-						Thread.sleep(13);
+						Thread.sleep(timeLeft);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
-				}			
+				}
 			}
 		});
-		
+
 		t.start();
 	}
-	
+
 	@Override
 	protected void paintComponent(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
 		super.paintComponent(g);
-		pe.draw(g2d);
+		pe1.draw(g2d);
+//		pe2.draw(g2d);
 	}
 }

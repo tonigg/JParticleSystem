@@ -9,27 +9,71 @@ import java.util.Random;
 public class ParticleEmiter {
 	private ArrayList<Particle> particles = new ArrayList<Particle>();
 	private Point maxVelocity, minVelocity;
+	private Point position;
 	private int maxTimer, minTimer;
 	private int maxParticles, minParticles;
+	private Color color;
 	private static Random r = new Random();
 
-	public ParticleEmiter(Point maxVelocity, Point minVelocity, int maxTimer,
-			int minTimer, int maxParticles, int minParticles) {
+	public ParticleEmiter(Point position, Point minVelocity, Point maxVelocity,
+			int minTimer, int maxTimer, int minParticles, int maxParticles,
+			Color color) {
+		this.position = position;
 		this.maxVelocity = maxVelocity;
 		this.minVelocity = minVelocity;
-		this.maxTimer = maxTimer;
+
+		if (maxTimer < minTimer) {
+			this.maxTimer = minTimer;
+		} else {
+			this.maxTimer = maxTimer;
+		}
 		this.minTimer = minTimer;
-		this.maxParticles = maxParticles;
+
+		if (maxParticles < minParticles) {
+			this.maxParticles = this.minParticles;
+		} else {
+			this.maxParticles = maxParticles;
+		}
 		this.minParticles = minParticles;
+
+		this.color = color;
+	}
+
+	private static int rDir() {
+		if (r.nextBoolean()) {
+			return 1;
+		} else {
+			return -1;
+		}
 	}
 
 	public void emit() {
-		int numberOfParticles = minParticles + r.nextInt(maxParticles);
+		r.setSeed(System.currentTimeMillis());
+
+		int numberOfParticles = minParticles
+				+ (int)(r.nextDouble() * maxParticles);
 		for (int i = 0; i < numberOfParticles; i++) {
-			particles.add(new Particle(new Point(300 + r.nextInt(50), 300 + r
-					.nextInt(50)), new Point(minVelocity.x
-					+ r.nextInt(maxVelocity.x), minVelocity.y
-					+ r.nextInt(maxVelocity.y)), 3000));
+			particles
+					.add(new Particle(
+							new Point(position.x + (int) (r.nextDouble() * 50),
+									position.y + (int) (r.nextDouble() * 50)),
+							new Point(
+									rDir()
+											* (minVelocity.x + (int) (r
+													.nextDouble() * maxVelocity.x)),
+									rDir()
+											* (minVelocity.y + (int) (r
+													.nextDouble() * maxVelocity.y))),
+							minTimer + (int) (r.nextDouble() * maxTimer)));
+		}
+
+		for (int i = 0; i < particles.size(); i++) {
+			if (particles.get(i).getVelocity().x == 0) {
+				particles.get(i).getVelocity().x = 1 * rDir();
+			}
+			if (particles.get(i).getVelocity().y == 0) {
+				particles.get(i).getVelocity().y = 1 * rDir();
+			}
 		}
 	}
 
@@ -42,16 +86,16 @@ public class ParticleEmiter {
 			}
 		}
 
-		if(particles.size() < minParticles){
+		if (particles.size() < minParticles) {
 			emit();
 		}
 	}
 
 	public void draw(Graphics2D g2d) {
-		g2d.setColor(Color.GREEN);
+		g2d.setColor(color);
 
-		for (Particle particle : particles) {
-			particle.draw(g2d);
+		for (int i = 0; i < particles.size(); i++) {
+			particles.get(i).draw(g2d);
 		}
 	}
 
