@@ -1,5 +1,7 @@
 package particle;
 
+import gui.ParticlePanel;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -12,15 +14,26 @@ public class ParticleEmiter {
 	private Point position;
 	private int maxTimer, minTimer;
 	private int maxParticles, minParticles;
+	private int radius;
 	private Color color;
+	private long emitTimer;
+	private long copyTime;
+	
+	private long prevTime;
+	
 	private static Random r = new Random();
 
+	private ParticlePanel panel;
+	
 	public ParticleEmiter(Point position, Point minVelocity, Point maxVelocity,
 			int minTimer, int maxTimer, int minParticles, int maxParticles,
-			Color color) {
+			Color color, int radius, long time,ParticlePanel panel) {
 		this.position = position;
+		this.radius = radius;
+		this.emitTimer = time;
 		this.maxVelocity = maxVelocity;
 		this.minVelocity = minVelocity;
+		this.panel = panel;
 
 		if (maxTimer < minTimer) {
 			this.maxTimer = minTimer;
@@ -36,6 +49,9 @@ public class ParticleEmiter {
 		}
 		this.minParticles = minParticles;
 
+		prevTime = System.currentTimeMillis();
+		copyTime = emitTimer;
+		
 		this.color = color;
 	}
 
@@ -46,26 +62,32 @@ public class ParticleEmiter {
 			return -1;
 		}
 	}
+	
+	private static double linearInterpolate(double x, double y, double amount){
+		return x*amount + y*(1 - amount);
+	}
 
 	public void emit() {
 		r.setSeed(System.currentTimeMillis());
 
 		int numberOfParticles = minParticles
-				+ (int)(r.nextDouble() * maxParticles);
+				+ (int) (r.nextDouble() * maxParticles);
 		for (int i = 0; i < numberOfParticles; i++) {
 			particles
 					.add(new Particle(
-							new Point(position.x + (int) (r.nextDouble() * 50),
-									position.y + (int) (r.nextDouble() * 50)),
+							new Point(
+									position.x
+											+ (int) (rDir() * r.nextDouble() * radius),
+									position.y
+											+ (int) (rDir() * r.nextDouble() * radius)),
 							new Point(
 									rDir()
-											* (minVelocity.x + (int) (r
-													.nextDouble() * maxVelocity.x)),
+											* ((int)linearInterpolate(minVelocity.x, maxVelocity.x, r.nextDouble())),
 									rDir()
-											* (minVelocity.y + (int) (r
-													.nextDouble() * maxVelocity.y))),
+											* ((int)linearInterpolate(minVelocity.y, maxVelocity.y, r.nextDouble()))),
 							minTimer + (int) (r.nextDouble() * maxTimer)));
-		}
+
+			}
 
 		for (int i = 0; i < particles.size(); i++) {
 			if (particles.get(i).getVelocity().x == 0) {
@@ -78,17 +100,27 @@ public class ParticleEmiter {
 	}
 
 	public void update() {
+		int width = panel.getWidth(), height = panel.getHeight();
+		
 		for (int i = particles.size() - 1; i >= 0; i--) {
 			if (particles.get(i).isAlive()) {
-				particles.get(i).update();
+				particles.get(i).update(width, height);
 			} else {
 				particles.remove(i);
 			}
 		}
 
-		if (particles.size() < minParticles) {
+		long currentTime = System.currentTimeMillis();
+		
+		emitTimer -= (currentTime - prevTime);
+		prevTime = currentTime;
+		
+		if (emitTimer < 0) {
+			emitTimer = copyTime;
 			emit();
 		}
+		
+		System.out.println("Number of particles: " + particles.size());
 	}
 
 	public void draw(Graphics2D g2d) {
@@ -97,6 +129,15 @@ public class ParticleEmiter {
 		for (int i = 0; i < particles.size(); i++) {
 			particles.get(i).draw(g2d);
 		}
+
+		g2d.setColor(Color.red);
+
+		g2d.drawOval(position.x - radius, position.y - radius, 2*radius, 2*radius);
+		
+		g2d.setColor(Color.BLUE);
+		
+		g2d.drawOval(275, 125, 50, 50);
+		
 	}
 
 	/**

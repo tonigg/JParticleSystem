@@ -18,6 +18,7 @@ public class ParticleSystemFrame extends JFrame{
 		add(p, BorderLayout.CENTER);
 		
 		setVisible(true);
+		createBufferStrategy(2);
 		
 		p.run();
 	}

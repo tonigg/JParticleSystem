@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.RenderingHints;
+import java.awt.image.BufferStrategy;
 
 import javax.swing.JPanel;
 
@@ -12,10 +14,10 @@ import particle.ParticleEmiter;
 
 public class ParticlePanel extends JPanel {
 
-	ParticleEmiter pe1 = new ParticleEmiter(new Point(100, 250),new Point(-6, -6), new Point(6, 6),
-			1200, 5000, 3000, 6000, Color.GREEN);
-//	ParticleEmiter pe2 = new ParticleEmiter(new Point(120, 560),new Point(-6, -6), new Point(6, 6),
-//			300, 5000, 1000, 1000, Color.CYAN);
+	ParticleEmiter pe1 = new ParticleEmiter(new Point(150, 250),new Point(-3, -3), new Point(3, 3),
+			1200, 2000, 1000, 1500, Color.GREEN, 50, 2000,this);
+	ParticleEmiter pe2 = new ParticleEmiter(new Point(120, 560),new Point(-6, -6), new Point(6, 6),
+			300, 5000, 1000, 1500, Color.CYAN, 50, 6000, this);
 
 	public ParticlePanel() {
 		super();
@@ -34,7 +36,7 @@ public class ParticlePanel extends JPanel {
 					beginTime = System.nanoTime();
 
 					pe1.update();
-//					pe2.update();
+					pe2.update();
 
 					repaint();
 
@@ -60,8 +62,9 @@ public class ParticlePanel extends JPanel {
 	@Override
 	protected void paintComponent(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		super.paintComponent(g);
 		pe1.draw(g2d);
-//		pe2.draw(g2d);
+		pe2.draw(g2d);
 	}
 }

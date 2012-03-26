@@ -47,13 +47,8 @@ public class Particle {
 		return alive;
 	}
 
-	public void update() {
-		if (position.x <= 0 || position.x >= ParticleSystemFrame.WIDTH) {
-			velocity.x *= -1;
-		}
-		if (position.y <= 0 || position.y >= ParticleSystemFrame.HEIGHT) {
-			velocity.y *= -1;
-		}
+	public void update(int width, int height) {
+		updateCollisions(width, height);
 
 		position.translate(velocity.x, velocity.y);
 
@@ -63,6 +58,21 @@ public class Particle {
 
 		if (timer < 0) {
 			alive = false;
+		}
+	}
+
+	private void updateCollisions(int width, int height) {
+		if (position.x <= 0 || position.x >= width) {
+			velocity.x *= -1;
+		}
+		if (position.y <= 0 || position.y >= height) {
+			velocity.y *= -1;
+		}
+
+		if (Math.pow((position.x - 300), 2) + Math.pow(position.y - 150, 2) <= Math.pow(
+				25, 2)) {
+			velocity.x *= -1;
+			velocity.y *= -1;
 		}
 	}
 
