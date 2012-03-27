@@ -14,14 +14,19 @@ import particle.ParticleEmiter;
 
 public class ParticlePanel extends JPanel {
 
-	ParticleEmiter pe1 = new ParticleEmiter(new Point(150, 250),new Point(-3, -3), new Point(3, 3),
-			1200, 2000, 1000, 1500, Color.GREEN, 50, 2000,this);
-	ParticleEmiter pe2 = new ParticleEmiter(new Point(120, 560),new Point(-6, -6), new Point(6, 6),
-			300, 5000, 1000, 1500, Color.CYAN, 50, 6000, this);
+	private ParticleEmiter pe1;
+	private ParticleEmiter pe2;
 
 	public ParticlePanel() {
 		super();
 		setBackground(Color.BLACK);
+
+		pe1 = new ParticleEmiter("Emiter1",new Point(150, 250), new Point(-3, -3),
+				new Point(3, 3), 1200, 2000, 100, 150, Color.GREEN, 50, 4, 2000,
+				this);
+		pe2 = new ParticleEmiter("Emiter2",new Point(120, 500), new Point(-6, -6),
+				new Point(6, 6), 300, 5000, 1000, 1500, Color.CYAN, 50, 10, 6000,
+				this);
 	}
 
 	private static final int FPS = 60;
@@ -62,9 +67,11 @@ public class ParticlePanel extends JPanel {
 	@Override
 	protected void paintComponent(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
-		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
 		super.paintComponent(g);
 		pe1.draw(g2d);
 		pe2.draw(g2d);
+		
 	}
 }

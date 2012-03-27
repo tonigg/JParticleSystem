@@ -11,11 +11,13 @@ public class Particle {
 	private int timer;
 	private boolean alive = true;
 	private long prevTime;
+	private int radius;
 
-	public Particle(Point position, Point velocity, int timer) {
+	public Particle(Point position, Point velocity, int timer, int radius) {
 		this.position = position;
 		this.velocity = velocity;
 		this.timer = timer;
+		this.radius = radius;
 		prevTime = System.currentTimeMillis();
 	}
 
@@ -62,21 +64,23 @@ public class Particle {
 	}
 
 	private void updateCollisions(int width, int height) {
-		if (position.x <= 0 || position.x >= width) {
+		int offset = radius/2;
+		
+		if (position.x <= 0 + offset || position.x +offset>= width) {
 			velocity.x *= -1;
 		}
-		if (position.y <= 0 || position.y >= height) {
+		if (position.y <= 0 +offset || position.y +offset >= height) {
 			velocity.y *= -1;
 		}
 
-		if (Math.pow((position.x - 300), 2) + Math.pow(position.y - 150, 2) <= Math.pow(
-				25, 2)) {
+		if (Math.pow((position.x  + offset - 300), 2) + Math.pow(position.y + offset  - 150, 2) <= Math.pow(
+				50, 2)) {
 			velocity.x *= -1;
 			velocity.y *= -1;
 		}
 	}
 
 	public void draw(Graphics2D g2d) {
-		g2d.fillOval(position.x, position.y, 4, 4);
+		g2d.fillOval(position.x, position.y, radius, radius);
 	}
 }
